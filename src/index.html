@@ -1,0 +1,506 @@
+<!doctype html>
+<!--
+Gazette Builder
+https://github.com/imperial64/beeblecraft-gazette
+Lay out a pixel-art newspaper for a Minecraft server in the browser and export the pages as PNG.
+
+Tool code: MIT licence, copyright 2026 imperial64 (see LICENSE in the repository).
+
+Salon Pixel font data: copyright 2026 imperial64, licensed under the SIL Open Font License,
+Version 1.1 (https://openfontlicense.org). The full licence text is in
+assets/salon-pixel/LICENSE-OFL.txt in the repository.
+
+Lantern and chain pieces: Modern Mizunos v0.5.2 by Kchem and Garden Gals,
+https://modrinth.com/organization/garden-gals, licensed CC BY-NC-SA 4.0
+(https://creativecommons.org/licenses/by-nc-sa/4.0/). Files: oxidized_copper_lantern.png,
+copper_lantern.png, oxidized_copper_chain.png, unchanged. Pages exported with these pieces on
+are adaptations and carry the same licence and credit.
+
+Fonts and sprites a user uploads are stored only in that user's own issue and theme files and
+in the browser's draft. They are never part of this site.
+
+Built by build.py from src/, assets/ and sample/. Edit those, not this file.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gazette Builder</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  --bg: #f3f2ef;
+  --panel: #ffffff;
+  --text: #1d1c1a;
+  --muted: #6b6760;
+  --border: #d4d0c8;
+  --field: #ffffff;
+  --sel: #dcefed;
+  --stage: #8a8a8a;
+  --ok: #1f7a3a;
+  --bad: #a3321e;
+  --warn: #d9a400;
+  --accent: #2e8b86;
+  --accent-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1d;
+    --panel: #252527;
+    --text: #e9e7e3;
+    --muted: #a19d96;
+    --border: #3e3d3b;
+    --field: #1c1c1d;
+    --sel: #23413f;
+    --stage: #3a3a3a;
+    --ok: #74c68f;
+    --bad: #f08a76;
+    --warn: #e6b422;
+    --accent: #7fc4bf;
+    --accent-text: #10201f;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+input[type="text"], input[type="number"], textarea, select {
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 4px 6px;
+  width: 100%;
+}
+textarea { resize: vertical; }
+button {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: default; }
+button.link { border: 0; background: none; color: var(--accent); padding: 4px 0; text-decoration: underline; }
+.app {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 168px;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "top top top" "left stage tools";
+  height: 100vh;
+}
+#topbar {
+  grid-area: top;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+#topbar #title { width: 240px; max-width: 100%; }
+#topbar .sep { width: 1px; align-self: stretch; background: var(--border); }
+#status { margin-left: auto; color: var(--muted); }
+#inspector {
+  grid-area: left;
+  overflow-y: auto;
+  padding: 8px 16px 32px;
+  border-right: 1px solid var(--border);
+  background: var(--panel);
+}
+#inspector h2 { font-size: 16px; margin: 8px 0; text-transform: none; }
+#inspector h3 { font-size: 14px; margin: 12px 0 0; }
+#inspector hr { border: 0; border-top: 1px solid var(--border); margin: 16px 0 8px; }
+#toolbox {
+  grid-area: tools;
+  overflow-y: auto;
+  padding: 8px;
+  border-left: 1px solid var(--border);
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tools-head { font-size: 13px; margin: 4px 4px 2px; color: var(--muted); font-weight: 600; }
+.tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  min-height: 56px;
+  padding: 6px 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.tile:hover, .tile:focus-visible { border-color: var(--accent); }
+.tile:active { cursor: grabbing; }
+.tile-name { font-size: 14px; font-weight: 600; }
+.tile-desc { font-size: 12px; color: var(--muted); line-height: 1.25; }
+#stage {
+  grid-area: stage;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.field { display: block; margin: 8px 0; }
+.field > span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+.field .note { display: block; margin-top: 2px; }
+.check { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0; }
+.check input { margin-top: 3px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.row > select { width: auto; flex: 1; }
+.radios label { display: inline-flex; gap: 4px; align-items: center; }
+.range { display: flex; gap: 8px; align-items: center; }
+.range input { flex: 1; }
+.range output { width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
+.muted { color: var(--muted); }
+.thumb { display: block; width: 100%; max-height: 160px; object-fit: contain; background: var(--bg); border: 1px solid var(--border); }
+.thumb.none { padding: 16px; text-align: center; color: var(--muted); }
+.photo-list { display: grid; gap: 4px; max-height: 260px; overflow-y: auto; margin: 4px 0 8px; }
+.photo-pick { display: flex; gap: 8px; align-items: center; text-align: left; padding: 4px; }
+.photo-pick img { width: 64px; height: 36px; object-fit: cover; flex: none; }
+.photo-pick span { overflow-wrap: anywhere; }
+.photo-pick.current { background: var(--sel); }
+.theme-sec { border-top: 1px solid var(--border); padding: 4px 0 8px; }
+.theme-sec > summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+.note { font-size: 12px; }
+.theme-row { display: grid; grid-template-columns: 92px 34px minmax(0, 1fr) auto; gap: 6px; align-items: center; margin: 4px 0; }
+.tr-name { font-size: 12px; overflow-wrap: anywhere; }
+.theme-row input[type="color"] { width: 34px; height: 28px; padding: 1px; border: 1px solid var(--border); border-radius: 3px; background: var(--field); }
+.theme-row .hex, #themePop .hex-input { font-family: ui-monospace, Consolas, monospace; }
+.style-card { position: relative; border: 1px solid var(--border); border-radius: 3px; padding: 6px 8px; margin: 6px 0; }
+.style-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.style-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.style-controls select { width: auto; max-width: 150px; }
+.style-controls input[type="number"] { width: 64px; }
+.style-controls .inline { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; }
+.style-card .colour-pop { left: 0; top: calc(100% + 4px); }
+.sprite-row { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0; }
+.sprite-preview { image-rendering: pixelated; background: #e3d8bd; border: 1px solid var(--border); flex: none; max-width: 120px; height: auto; }
+.sprite-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sprite-text .row { margin: 4px 0 0; }
+.font-row { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px 0; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.skin-preview { image-rendering: pixelated; background: #e3d8bd; border: 1px solid var(--border); display: block; margin-top: 8px; }
+#help {
+  margin: 16px 16px 0;
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow-y: auto;
+  max-height: 50vh;
+  flex: none;
+}
+#help h2 { font-size: 16px; margin: 8px 0; }
+#help h3 { font-size: 14px; margin: 12px 0 4px; }
+#help p, #help li { max-width: 72ch; }
+#glyphs { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+#stageBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+#tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tab.active, [data-zoom].active { background: var(--sel); font-weight: 600; }
+#stageBar .sep { width: 1px; align-self: stretch; background: var(--border); }
+.stage-right { margin-left: auto; position: relative; }
+.indicator { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 2px 4px; }
+.indicator.bad { color: var(--bad); }
+.indicator.warn { color: var(--warn); }
+.indicator.none { color: var(--muted); font-size: 13px; }
+.popover {
+  position: absolute;
+  z-index: 20;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 8px;
+}
+#issuesPop { right: 0; top: calc(100% + 6px); width: min(420px, calc(100vw - 32px)); max-height: 50vh; overflow-y: auto; }
+#issuesPop h3 { font-size: 13px; margin: 4px 4px 4px; }
+#issuesPop .rep { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 4px; border-radius: 3px; }
+#issuesPop .rep:hover { background: var(--sel); }
+#issuesPop .rep.issue { color: var(--bad); }
+.add-wrap { position: relative; }
+#addMenu { left: 0; top: calc(100% + 6px); min-width: 180px; display: flex; flex-direction: column; gap: 2px; }
+#addMenu[hidden] { display: none; }
+#addMenu button { text-align: left; border: 0; background: none; }
+#addMenu button:hover { background: var(--sel); }
+.menu-label { font-size: 12px; color: var(--muted); padding: 6px 8px 2px; }
+#canvasWrap { background: var(--stage); padding: 24px; flex: 1 1 auto; overflow: auto; min-height: 0; }
+#pageBox { position: relative; margin: 0 auto; width: max-content; }
+#screen { display: block; image-rendering: auto; background: #efe6d0; }
+#overlay { position: absolute; inset: 0; overflow: visible; }
+.ov-hover { position: absolute; border: 1px dashed var(--accent); pointer-events: none; }
+.ov-sel { position: absolute; border: 2px solid var(--accent); pointer-events: none; }
+.ov-grip {
+  position: absolute;
+  left: -2px;
+  bottom: 100%;
+  height: 16px;
+  padding: 0 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: move;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  border-radius: 2px 2px 0 0;
+}
+.ov-hover .ov-grip { left: -1px; opacity: 0.85; }
+.ov-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; pointer-events: none; box-shadow: 0 0 0 1px #fff; }
+.ov-dot.issue { background: #a3321e; }
+.ov-dot.warning { background: #d9a400; }
+.ov-hint {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  color: #6b6760;
+  font-size: 15px;
+  pointer-events: none;
+}
+.ov-hint[hidden], .ov-hover[hidden], .ov-sel[hidden], .ov-grip[hidden] { display: none; }
+#overlay [hidden] { display: none !important; }
+.ov-add {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  pointer-events: none;
+  color: #5a5048;
+  font-size: 12px;
+  text-align: center;
+}
+.ov-add button { pointer-events: auto; background: #fff; color: #1d1c1a; border-color: #9c907e; padding: 2px 8px; font-size: 13px; }
+.ov-handle {
+  position: absolute;
+  height: 6px;
+  cursor: ns-resize;
+  pointer-events: auto;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 10px);
+  opacity: 0.85;
+}
+.ov-handle:hover { opacity: 1; background: var(--accent); }
+#ghost { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+#overlay.ghosting > :not(#ghost):not(#ovBars) { visibility: hidden; }
+.ov-span {
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  width: 10px;
+  height: 32px;
+  margin-top: -16px;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  border-radius: 3px;
+  cursor: ew-resize;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+.ov-hover .ov-span { opacity: 0.85; }
+#ovBars { position: absolute; inset: 0; pointer-events: none; }
+.ov-bar { position: absolute; background: var(--accent); opacity: 0.3; pointer-events: none; }
+.ov-bar.on { opacity: 1; }
+.ov-plus-at { position: absolute; width: 0; height: 0; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.ov-plus { flex: none; width: 28px; height: 28px; margin-top: -14px; border-radius: 50%; background: var(--accent); color: #fff; font: 600 20px/28px system-ui, sans-serif; text-align: center; }
+.ov-plus-note { margin-top: 4px; padding: 2px 6px; white-space: nowrap; font-size: 12px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 3px; }
+.drag-chip { position: fixed; z-index: 50; pointer-events: none; padding: 1px 6px; font-size: 12px; background: var(--accent); color: var(--accent-text); border-radius: 3px; white-space: nowrap; }
+body.dragging, body.dragging * { cursor: grabbing !important; }
+#caret { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; }
+#editbox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  resize: none;
+  overflow: hidden;
+  white-space: pre;
+  font-size: 16px;
+  pointer-events: none;
+}
+.text-bar {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 6px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 13px;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  cursor: default;
+}
+.text-bar select, .text-bar input { width: auto; padding: 2px 4px; }
+#tbFont { max-width: 160px; }
+#tbSize { width: 76px; }
+.tb-swatch { width: 30px; height: 26px; padding: 3px; }
+.tb-swatch .sw { display: block; width: 100%; height: 100%; border: 1px solid rgba(0, 0, 0, 0.35); }
+.tb-note { color: var(--muted); font-size: 12px; }
+.colour-pop { left: 0; top: calc(100% + 4px); width: 300px; max-width: calc(100vw - 32px); white-space: normal; }
+.pop-label { font-size: 12px; color: var(--muted); margin: 4px 0; }
+.pop-empty { margin: 0 0 4px; font-size: 12px; }
+.sw-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.sw-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; overflow-wrap: anywhere; }
+.swatch { width: 24px; height: 24px; padding: 0; border: 1px solid rgba(0, 0, 0, 0.35); border-radius: 3px; }
+.swatch.current { outline: 2px solid var(--accent); outline-offset: 1px; }
+.sw-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.saved { position: relative; display: inline-block; }
+.sw-x { position: absolute; top: -6px; right: -6px; width: 15px; height: 15px; padding: 0; font-size: 10px; line-height: 13px; border-radius: 50%; display: none; }
+.saved:hover .sw-x, .sw-x:focus-visible { display: block; }
+.hex-row { display: flex; gap: 6px; margin-top: 8px; }
+.hex-row input { flex: 1; font-family: ui-monospace, Consolas, monospace; }
+.hex-row input[aria-invalid="true"] { border-color: var(--bad); }
+@media (max-width: 999px) {
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+  #topbar { order: 0; }
+  #toolbox {
+    order: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-left: 0;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+  }
+  .tools-head { width: 100%; }
+  .tile { flex: 1 1 140px; }
+  #stage { order: 2; }
+  #canvasWrap { overflow: visible; padding: 16px; }
+  #inspector { order: 3; border-right: 0; overflow: visible; }
+  #topbar #title { width: 100%; }
+  #status { margin-left: 0; width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="topbar">
+    <input id="title" type="text" aria-label="Issue title" placeholder="Issue title">
+    <button id="btnNew" type="button">New</button>
+    <button id="btnOpen" type="button">Open .json</button>
+    <button id="btnSave" type="button" title="Save the whole issue (layout, text, photos, theme) as a .json file you can reopen. Ctrl+S">Save .json</button>
+    <button id="btnSaveAs" type="button">Save as</button>
+    <span class="sep"></span>
+    <button id="btnExportPage" type="button" title="Save this page as a 1200 by 1600 PNG">Export page PNG</button>
+    <button id="btnExportAll" type="button" title="Save every page as a PNG">Export all pages PNG</button>
+    <button id="btnExportMd" type="button" title="Write only the words, block by block, as a Markdown file for the journal. This does not save the issue.">Export text .md</button>
+    <span class="sep"></span>
+    <button id="btnTheme" type="button">Theme</button>
+    <button id="btnHelp" type="button" aria-expanded="false">Help</button>
+    <button id="btnSample" type="button" title="Replace the current issue with issue 1 of the Beeblecraft Gazette">Load sample</button>
+    <span id="status" role="status"></span>
+  </header>
+  <aside id="inspector" aria-label="Inspector"></aside>
+  <main id="stage">
+    <section id="help" hidden>
+      <h2>Gazette Builder</h2>
+      <p>Lay out a newspaper in the Beeblecraft Gazette's pixel style and export each page as a 1200 by 1600 PNG. Everything happens in this browser tab. Nothing is uploaded anywhere.</p>
+      <h3>Making an issue</h3>
+      <ol>
+        <li>Drag a block from the toolbox on the right onto the page. While you drag, the page shows how it will look with the block dropped there, the new block faded and outlined. A click on a tile adds the block at the end of the selected block's column instead, which also works on a phone.</li>
+        <li>Click any text on the page and type.</li>
+        <li>Drop screenshots from your files onto a photo to fill it, or anywhere else on the page to add them as new photos. An empty photo also has an Add photo button.</li>
+        <li>Click a block to edit it in the inspector on the left. Click empty paper to edit the page itself.</li>
+        <li>The + next to the page tabs adds a blank page or one from a preset. Load sample opens issue 1 of the Beeblecraft Gazette to look at.</li>
+      </ol>
+      <h3>Bands and columns</h3>
+      <p>A page is a stack of bands, each with its own columns. While you drag a block, bars show between the bands and strips at the edges and between the columns. Drop on a bar for a new band holding just that block, at the left or right edge of a band or between two columns for a new column; a "+" marks the one you are on. A column that loses its last block goes away. Three columns is the format the paper was designed for; more are allowed and get a warning.</p>
+      <p>A block can run across several columns. Drag the small tab on the right edge of a block sideways over the columns it should cover, or set Span columns in the inspector. A block keeps its span whatever you put above or beside it, so the column to its left runs on beside it.</p>
+      <h3>Moving blocks</h3>
+      <p>Point at a block and a coloured strip with its name shows above it. Drag the strip to move the block anywhere: into a column, to a new column, or onto a bar for a band of its own. The page shows how it will look before you let go, with the block faded where it will land. A drag on the block itself selects text or moves a photo's crop. Escape cancels a drag. Alt and the arrow keys move a selected block up and down its column or to the next column. Delete removes it, and Ctrl+Z undoes.</p>
+      <h3>Masthead and footer</h3>
+      <p>The masthead and the footer are blocks like any other. The Masthead and Footer tiles add them, they can be dragged anywhere on the page as a band of their own, and deleting them leaves a bare page. A footer at the end of the page sits at the bottom edge. The wordmark, tagline and kickers are shared by every masthead in the issue.</p>
+      <h3>Text</h3>
+      <p>Click to type. Enter starts a new paragraph, or ends a one-line text such as a headline. The bar above the text sets the font, size and colour of that whole text, and can upload a font file (.ttf, .otf, .woff, .woff2). A colour can be one of the theme's or any hex code; Save colour keeps it in the issue for later.</p>
+      <h3>Photos</h3>
+      <p>Drop an image onto a photo, or use Add photo or Upload photo. Select the photo, then turn the mouse wheel over it to zoom and drag it to move the crop. The strip along its bottom edge sets a fixed height; Flexible in the inspector lets it stretch with the column again. Photos and the map stretch to fill their column down to the end of the band. A photo across several columns stretches only when nothing follows it in any of them.</p>
+      <h3>Theme</h3>
+      <p>Theme in the top bar edits the look of the whole issue: every colour as a hex code, the default font, size and colour of each kind of text, the lantern and chain sprites (your own PNG, up to 64 by 64), uploaded fonts and the paper texture. Export theme saves it as a file to use in another issue; Import theme loads one.</p>
+      <h3>Issues and warnings</h3>
+      <p>The triangle above the page is red when something will export wrong (a column runs over, a photo is missing, a character the font does not have) and yellow when there are only warnings (a gap at the bottom of a column, an empty column, a missing credit). Hover it for the count and click it for the list; click a line to go to that block. A small dot on a block marks it too.</p>
+      <h3>Save versus export</h3>
+      <p>Save writes the issue file (.json) that you reopen and share with a co-editor. Export PNG writes the pictures you post. Export text writes the words only.</p>
+      <p>The browser also keeps a draft of the issue on its own, so closing the tab loses nothing. Drafts belong to this browser and this address only (the website and a downloaded copy of the file keep separate drafts). In Chrome and Edge, Save and Ctrl+S write back to the file you opened; other browsers download a new copy each time. Export all pages saves one file per page; Chrome may ask once to allow several downloads.</p>
+      <p><button id="btnDiscard" type="button">Discard draft</button> clears the browser's draft and starts a new issue.</p>
+      <h3>Before posting</h3>
+      <p id="reminderText"></p>
+      <h3>The font</h3>
+      <p>Salon Pixel is the paper's own font. A character it does not have is drawn as a hollow box and listed as an issue. It has these characters:</p>
+      <p id="glyphs"></p>
+      <h3>Licences</h3>
+      <p>Tool: MIT. Salon Pixel: SIL Open Font License 1.1, copyright 2026 imperial64. Lantern and chain pieces: Modern Mizunos v0.5.2 by Kchem and Garden Gals, CC BY-NC-SA 4.0 (modrinth.com/organization/garden-gals); pages exported with them on carry that licence and need that credit. Turn the ornaments off in the page or masthead inspector to leave them out, or replace all three in the theme. Fonts and sprites you upload stay in your own files under their own terms. Source: github.com/imperial64/beeblecraft-gazette</p>
+    </section>
+    <div id="stageBar">
+      <span id="tabs"></span>
+      <span class="add-wrap">
+        <button id="btnAddPage" type="button" aria-haspopup="menu" aria-expanded="false" title="Add a page">+</button>
+        <div id="addMenu" class="popover" role="menu" hidden></div>
+      </span>
+      <span class="sep"></span>
+      <button type="button" data-zoom="fit">Fit</button>
+      <button type="button" data-zoom="0.5">50%</button>
+      <button type="button" data-zoom="1">100%</button>
+      <button type="button" data-zoom="2">200%</button>
+      <span class="stage-right">
+        <button id="indicator" type="button" class="indicator none" aria-expanded="false">No issues</button>
+        <div id="issuesPop" class="popover" hidden></div>
+      </span>
+    </div>
+    <div id="canvasWrap">
+      <div id="pageBox">
+        <canvas id="screen" width="1200" height="1600"></canvas>
+        <div id="overlay"></div>
+      </div>
+    </div>
+  </main>
+  <aside id="toolbox" aria-label="Toolbox"></aside>
+</div>
+<input id="fileJson" type="file" accept=".json,application/json" hidden>
+<input id="fileImages" type="file" accept="image/*" multiple hidden>
+<input id="fileSkin" type="file" accept="image/png" hidden>
+<input id="fileFont" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" hidden>
+<input id="fileSprite" type="file" accept="image/png" hidden>
+<input id="fileTheme" type="file" accept=".json,application/json" hidden>
+<script type="application/json" id="gazette-assets">{{ASSETS_JSON}}</script>
+<script type="application/json" id="gazette-sample">{{SAMPLE_JSON}}</script>
+{{SCRIPTS}}
+</body>
+</html>

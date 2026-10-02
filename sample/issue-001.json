@@ -1,0 +1,416 @@
+{
+  "format": "gazette-builder-issue",
+  "version": 3,
+  "title": "The Beeblecraft Gazette, No. 1",
+  "paper": {
+    "wordmark": "THE BEEBLECRAFT GAZETTE",
+    "tagline": "Inspections, cases and notices from the Beeblecraft Inspection Office",
+    "kickerLeft": "NO. 1",
+    "kickerCentre": "BEEBLECRAFT INSPECTION OFFICE",
+    "kickerRight": "OCTOBER 2026",
+    "ornaments": true,
+    "skin": "img-skin",
+    "skinModel": "auto",
+    "styles": {}
+  },
+  "theme": {
+    "colours": {
+      "paper": "#EFE6D0",
+      "paper_shade": "#E3D8BD",
+      "paper_dark": "#CDBF9E",
+      "ink": "#1F1B17",
+      "ink_soft": "#5A5048",
+      "ink_faint": "#9C907E",
+      "teal": "#2E8B86",
+      "teal_dark": "#1F5F5C",
+      "teal_light": "#7FC4BF",
+      "copper": "#B8683A"
+    },
+    "savedColours": [],
+    "styles": {
+      "body": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink"
+      },
+      "headline": {
+        "font": "salon-pixel",
+        "size": 22,
+        "colour": "ink"
+      },
+      "caption": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft"
+      },
+      "boxTitle": {
+        "font": "salon-pixel",
+        "size": 22,
+        "colour": "ink"
+      },
+      "register": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft"
+      },
+      "signature": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink"
+      },
+      "footer": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft"
+      },
+      "kicker": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft",
+        "tracking": 1
+      },
+      "tagline": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft"
+      },
+      "wordmark": {
+        "font": "salon-pixel",
+        "size": 44,
+        "colour": "ink",
+        "bold": true
+      },
+      "mapLabel": {
+        "font": "salon-pixel",
+        "size": 11,
+        "colour": "ink_soft"
+      }
+    },
+    "sprites": {
+      "lantern": null,
+      "footerLantern": null,
+      "chain": null
+    },
+    "fonts": {},
+    "texture": true
+  },
+  "pages": [
+    {
+      "bands": [
+        {
+          "columns": [
+            [
+              {
+                "type": "masthead",
+                "id": "masthead",
+                "variant": "full"
+              }
+            ]
+          ]
+        },
+        {
+          "columns": [
+            [
+              {
+                "type": "photo",
+                "id": "lead",
+                "span": 2,
+                "image": "img-lead",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "The south line near the cherry trees: birch slab lanes, the rail down the middle, a copper lantern on every pillar.",
+                "minH": 195,
+                "maxH": 195
+              },
+              {
+                "type": "story",
+                "id": "intro",
+                "headline": "The office starts work",
+                "body": "The Beeblecraft Inspection Office is choosing where to settle and will build its office as soon as it can. In the meantime it works out of the community house at spawn.\nThe office mainly inspects public builds and places: rail lines, roads, farms, services and outposts. It also takes requests for private inspections of bases and operations. File one with the office directly, or reach the officer any way that works for you. Each visit is written up as a report, and each problem gets a case number so it can be followed until it is fixed. This gazette is where the reports are published."
+              },
+              {
+                "type": "photo",
+                "id": "south-water",
+                "image": "img-south-water",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "Heading back toward spawn across the water, with lanterns along the right side.",
+                "minH": 64,
+                "maxH": 168
+              }
+            ],
+            [
+              {
+                "ref": "lead"
+              },
+              {
+                "type": "story",
+                "id": "south",
+                "headline": "South line: a clean ride and one sore head",
+                "body": "Ridden out to z 10121 and back on 2 October. The cart never stalled, and there were no stray carts. It kept going through every stretch satellite imagery could not see.\nBirch slabs on the outer lanes, stone brick in the middle. Copper lanterns hang from lightning rods on stone brick pillars six to nine blocks apart, and the tunnels add froglights. On one stretch through the desert the outer lanes change to dark wood.\nOne fault: a block at head height at a base exit on the way out. Case C-006."
+              },
+              {
+                "type": "photo",
+                "id": "south-snow",
+                "image": "img-south-snow",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "The south line through the desert, set out with spruce trees and lanterns on the sand. The outer lanes here are dark wood.",
+                "minH": 56,
+                "maxH": 168
+              }
+            ],
+            [
+              {
+                "type": "desk",
+                "id": "desk",
+                "title": "From the officer's desk",
+                "body": "I began by riding every line out of spawn, both ways, with a notebook on my knee. All four are done.\nThe south road is the best public road out of spawn in this world, and whoever hung those lanterns has my thanks. The west line goes under the sea and out to x -9995 without a single stall. The east hill at x 6207 is the one place a cart will not get you home, so that is the first job.\nIf you left an empty cart on a line, please take it with you. It stops the next rider dead.\nReports and cases are open to anyone who asks.",
+                "signature": "The Inspection Officer"
+              },
+              {
+                "type": "map",
+                "id": "map",
+                "blocksPerPx": 200,
+                "lines": {
+                  "east": {
+                    "blocks": 9210,
+                    "label": "x 9210",
+                    "style": "solid"
+                  },
+                  "north": {
+                    "blocks": 7433,
+                    "label": "z -7433",
+                    "style": "solid"
+                  },
+                  "south": {
+                    "blocks": 10121,
+                    "label": "z 10121",
+                    "style": "solid"
+                  },
+                  "west": {
+                    "blocks": 9995,
+                    "label": "x -9995",
+                    "style": "solid"
+                  }
+                },
+                "caption": "The four lines out of spawn, to scale, measured to the end of the rails or the road."
+              },
+              {
+                "type": "photo",
+                "id": "south-bridge",
+                "image": "img-south-bridge",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "A south line bridge with a lattice railing and lit powered rails. A second bridge of sandstone and wood runs alongside.",
+                "minH": 64,
+                "maxH": 168
+              }
+            ]
+          ]
+        },
+        {
+          "columns": [
+            [
+              {
+                "type": "footer",
+                "id": "page1-footer",
+                "text": "Continued on page 2: the west line ridden to the end, the east and north lines and the case register."
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "bands": [
+        {
+          "columns": [
+            [
+              {
+                "type": "masthead",
+                "id": "masthead",
+                "variant": "half"
+              }
+            ]
+          ]
+        },
+        {
+          "columns": [
+            [
+              {
+                "type": "photo",
+                "id": "west-lead",
+                "span": 2,
+                "image": "img-west-lead",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "The west line on a raised stretch of dark wood lanes, with lanterns hung from wooden arches high over the forest and the sea.",
+                "minH": 195,
+                "maxH": 195
+              },
+              {
+                "type": "story",
+                "id": "west",
+                "headline": "West line: under the sea to x -9995",
+                "body": "Ridden out to x -9995 and back on 2 October. The cart did not stop once in either direction, and there were no stray carts.\nFrom x -1468 the line runs into a long tunnel under the ocean. The tunnel is why satellite imagery lost the track at x -3870 and saw less than half the line. The ride covered the rest.\nThe outer lanes are stone brick with smooth stone in the middle. Bridges switch to wood, mostly jungle planks with dark oak down the middle. Further out the track passes a maze.\nNo cases from this ride."
+              },
+              {
+                "type": "photo",
+                "id": "west-tunnel",
+                "image": "img-west-tunnel",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "Inside the tunnel under the ocean, with kelp outside the glass and a lit powered rail ahead.",
+                "minH": 56,
+                "maxH": 168
+              }
+            ],
+            [
+              {
+                "ref": "west-lead"
+              },
+              {
+                "type": "photo",
+                "id": "west-bridge",
+                "image": "img-west-bridge",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "On the west line",
+                "caption": "A plank bridge over a river, with a village on the far bank.",
+                "minH": 64,
+                "maxH": 168
+              },
+              {
+                "type": "photo",
+                "id": "west-temple",
+                "image": "img-west-temple",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "The track climbs stairs toward a mossy stone brick temple.",
+                "minH": 64,
+                "maxH": 168
+              },
+              {
+                "type": "box",
+                "id": "followup",
+                "title": "Still to check",
+                "body": "A second railway leaves the west line near the tunnel entrance at x -1468. Where it goes is not known yet.\nThe west road runs on about 10 blocks past the rails. The end will be measured on the next visit."
+              }
+            ],
+            [
+              {
+                "type": "story",
+                "id": "east",
+                "headline": "East line: stall at x 6207",
+                "body": "Rails run to x 8747 and the road on to x 9210. Heading east there were no rail problems. Heading home the cart stops on the hill at x 6207 and rolls back. It is a 16 block climb with no powered rails, while climbs of 12 and 14 further out rode fine. The hill with tunnels from x 1806 to 3283 hides the track from satellite imagery, and the ride through it was clean. Stray carts as well. Cases C-001, C-003, C-004."
+              },
+              {
+                "type": "story",
+                "id": "north",
+                "headline": "North line: slow hill, fine tunnel",
+                "body": "Rails to z -7385, road to z -7433. One slow climb at z -2769 heading out, otherwise clean both ways. A climb of 15 at z -2142 rode fine. The tunnel from z -4197 runs under the sea, with a window to the water, paintings on the walls and flowers along the track. Cases C-002, C-003."
+              },
+              {
+                "type": "photo",
+                "id": "west-maze",
+                "image": "img-west-maze",
+                "zoom": 1,
+                "focusX": 0.5,
+                "focusY": 0.5,
+                "headline": "",
+                "caption": "The maze beside the west line, seen from the cart.",
+                "minH": 64,
+                "maxH": 168
+              },
+              {
+                "type": "register",
+                "id": "cases",
+                "title": "Case register",
+                "lines": "C-001 East stall, x 6207\nC-002 North hill, z -2769\nC-003 Stray carts on lines\nC-004 East rails to road end\nC-005 Powered rail standard\nC-006 South head bump"
+              }
+            ]
+          ]
+        },
+        {
+          "columns": [
+            [
+              {
+                "type": "footer",
+                "id": "footer",
+                "text": "Out of character. Names appear in the Gazette only with the player's permission: message the poster to be named, or to be left out. Screenshots taken with Mizuno's 16 Craft (mizunomcmemo.blogspot.com) and Photon Shaders (dev build). Lantern and chain pieces from Modern Mizunos v0.5.2 by Kchem and Garden Gals, CC BY-NC-SA 4.0 (modrinth.com/organization/garden-gals). This page: CC BY-NC-SA 4.0, imperialboi."
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "images": {
+    "img-skin": {
+      "name": "character-skin.png",
+      "kind": "skin",
+      "file": "character-skin.png"
+    },
+    "img-lead": {
+      "name": "2026-10-02_17.13.46.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.13.46.jpg"
+    },
+    "img-south-water": {
+      "name": "2026-10-02_17.14.43.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.14.43.jpg"
+    },
+    "img-south-snow": {
+      "name": "2026-10-02_17.04.07.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.04.07.jpg"
+    },
+    "img-south-bridge": {
+      "name": "2026-10-02_17.12.22.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.12.22.jpg"
+    },
+    "img-west-lead": {
+      "name": "2026-10-02_17.42.47.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.42.47.jpg"
+    },
+    "img-west-tunnel": {
+      "name": "2026-10-02_17.44.30.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.44.30.jpg"
+    },
+    "img-west-bridge": {
+      "name": "2026-10-02_17.38.08.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.38.08.jpg"
+    },
+    "img-west-temple": {
+      "name": "2026-10-02_17.36.15.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.36.15.jpg"
+    },
+    "img-west-maze": {
+      "name": "2026-10-02_17.59.43.png",
+      "kind": "photo",
+      "file": "photos/2026-10-02_17.59.43.jpg"
+    }
+  }
+}
