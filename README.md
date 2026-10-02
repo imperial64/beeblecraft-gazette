@@ -45,7 +45,3 @@ It needs Python 3 and Pillow (`pip install pillow`). `python build.py --import-p
 - Salon Pixel font: SIL Open Font License 1.1, copyright 2026 imperial64. See [assets/salon-pixel/LICENSE-OFL.txt](assets/salon-pixel/LICENSE-OFL.txt).
 - Lantern and chain pieces: from Modern Mizunos v0.5.2 by Kchem and Garden Gals (https://modrinth.com/organization/garden-gals), CC BY-NC-SA 4.0. Pages exported with the ornaments on carry that licence and must credit them; the back page preset has a footer template for it. Turn the ornaments off, or replace all three pieces in the theme, to leave them out. See [assets/modern-mizunos/CREDIT.md](assets/modern-mizunos/CREDIT.md).
 - Fonts and sprites you upload stay in your own issue and theme files under their own terms; they are never part of this site.
-
-## Support
-
-If the tool is useful to you, you can support it at https://buymeacoffee.com/imperial64
